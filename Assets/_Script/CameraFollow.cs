@@ -7,16 +7,17 @@ public class CameraFollow : MonoBehaviour
     // Start is called before the first frame update
 
     public Transform target; // Đối tượng mà camera sẽ theo dõi
-    public float smoothSpeed = 0.125f; // Tốc độ mượt mà của camera
-    public Vector2 offset; // Khoảng cách giữa camera và đối tượng
-
-    void LateUpdate()
+    public float smoothSpeed = 30.0f; // Tốc độ mượt mà của camera
+    public Vector3 offset; // Khoảng cách giữa camera và đối tượng
+    
+    private void Start()
     {
-       
-        Vector2 smoothedPosition = Vector2.Lerp(transform.position, target.position, smoothSpeed);
-        transform.position = smoothedPosition;
 
-        transform.LookAt(target);
+    }
+    void Update()
+    {
+        Vector3 smoothedPosition = Vector3.Lerp(transform.position, target.position, smoothSpeed);
+        transform.position = smoothedPosition + offset; ;        
     }
 }
 
