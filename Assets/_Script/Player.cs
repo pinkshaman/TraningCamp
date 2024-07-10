@@ -19,11 +19,12 @@ public class Player : MonoBehaviour
     bool isJumping = false;
     private bool alive = true;
     float moveHorizontal;
-    
+    public float skillCooldown = Mathf.Infinity;
     bool isCrouching = false; 
     public Collider2D col;
-    
-  
+    bool canMove = true;
+    public Transform firePoint;
+    public GameObject[] fireball;
     // Start is called before the first frame update
 
 
@@ -40,14 +41,23 @@ public class Player : MonoBehaviour
             isJumping = true;
         }
     }
-   
-    void OnTriggerEnter2D(Collider2D collider)
+    private int findFireball()
     {
-
-
+        for (int i = 0; i < fireball.Length; i++)
+        {
+            if (!fireball[i].activeInHierarchy)
+            {
+                return i;
+            }
+        }
+        return 0;
     }
-   
-    
+
+    private void OnTriggerEnter2D(Collider2D collider)
+    {
+        
+    }
+
 
     void Flip()
     {
@@ -68,28 +78,31 @@ public class Player : MonoBehaviour
 
     private void Move()
     {
-        Flip();
-        moveHorizontal = Input.GetAxis("Horizontal");
-
-        if (Input.GetButton("Horizontal"))
+        if (canMove== true)
         {
+            Flip();
+            moveHorizontal = Input.GetAxis("Horizontal");
 
-            if (isCrouching == false)
+            if (Input.GetButton("Horizontal"))
             {
 
-                anim.SetBool("isWalk", true);
-                transform.position += movement * speed * Time.deltaTime;
+                if (isCrouching == false)
+                {
+
+                    anim.SetBool("isWalk", true);
+                    transform.position += movement * speed * Time.deltaTime;
+                }
+                else
+                {
+                    anim.SetBool("isWalk", false);
+                    float termSpeed = 0.0f;
+                    transform.position += movement * termSpeed * Time.deltaTime;
+                }
             }
             else
             {
                 anim.SetBool("isWalk", false);
-                float termSpeed = 0.0f;
-                transform.position += movement * termSpeed * Time.deltaTime;
             }
-        }
-        else
-        {
-            anim.SetBool("isWalk", false);
         }
     }
     void Jump()
@@ -104,7 +117,12 @@ public class Player : MonoBehaviour
                 //Vector2 jump = new Vector2(transform.position.x, jumpPower);
                 anim.SetBool("isJump", true);
                 transform.Translate(movement * jumpPower * Time.deltaTime);
+                canMove = false;
             }
+        }
+        else
+        {
+            canMove =true;
         }
     }
     void Crounch()
@@ -129,10 +147,14 @@ public class Player : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.C))
         {
+
             anim.SetTrigger("Attack");
             anim.SetBool("isAttack", true);
-            
 
+            skillCooldown = 0;
+
+            fireball[findFireball()].transform.position = firePoint.position;
+            fireball[findFireball()].GetComponent<skill>().setDirection(Mathf.Sign(transform.localScale.x));
         }
         else
         {
@@ -174,7 +196,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
-       
+        skillCooldown += Time.deltaTime;
         Restart();
         if (alive)
         {

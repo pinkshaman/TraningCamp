@@ -8,39 +8,59 @@ public class skill : MonoBehaviour
     public string skillDescription;
     public string skillType;
     public string skillLevel;
-    public float skillspeed;
+    
     public Collider2D effect;
-    public Vector3 skillRange;
-    public Transform posittionChar;
-    public Vector3 skillPosition;
-    private Animator anim;
+    public Vector3 skillRange;    
+    
+    private Animator anim; 
+    private bool hit;
+    public float speed = 30.0f;
+    float direction;
 
-    void skillRan()
+  
+
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        skillRange = new Vector3 (skillPosition.x,skillPosition.y+30.0f,skillPosition.z);
-       
+        hit = true;
+        effect.enabled = false;
+        anim.SetTrigger("explosion");
+    }
 
+    public void setDirection(float _direction)
+    {
+        effect.enabled = true;
+        direction = _direction;
+        gameObject.SetActive(true);
+        hit = false;
+
+        float localSccaleX = transform.localScale.x;
+        if (Mathf.Sign(localSccaleX) != _direction)
+            localSccaleX = -localSccaleX;
+        transform.localScale = new Vector3(localSccaleX, transform.localScale.y, transform.localScale.z);
+    }
+
+
+    private void Deactivate()
+    {
+        gameObject.SetActive(false);
     }
     // Start is called before the first frame update
     void Start()
     {
+        effect = GetComponent<CustomCollider2D>();
+        anim = GetComponent<Animator>();
 
-        Vector3 skillPosition = posittionChar.transform.position;
-        anim= GetComponent<Animator>();
+
     }
-    
+
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetButton("C"))
-        {
-            gameObject.SetActive(true);
-            anim.SetTrigger("FireBall");
-            skillRan();
-        }
-        else
-        {
-            Vector3 skillPosition = posittionChar.transform.position;
-        }
+        if (hit) return;
+        float skillSpeed = speed * Time.deltaTime * direction;
+        transform.Translate(skillSpeed, 0.0f, 0.0f);
+        anim.SetTrigger("FireBall");
+        
     }
+
 }
