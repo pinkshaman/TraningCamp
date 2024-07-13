@@ -22,9 +22,11 @@ public class Player : MonoBehaviour
     public float skillCooldown = Mathf.Infinity;
     bool isCrouching = false; 
     public Collider2D col;
-    bool canMove = true;
+    public bool canMove = true;
     public Transform firePoint;
     public GameObject[] fireball;
+    public Transform windpPoint;
+    public GameObject Wind;
     // Start is called before the first frame update
 
 
@@ -76,7 +78,7 @@ public class Player : MonoBehaviour
     }
 
 
-    private void Move()
+    public void Move()
     {
         if (canMove== true)
         {
@@ -91,6 +93,9 @@ public class Player : MonoBehaviour
 
                     anim.SetBool("isWalk", true);
                     transform.position += movement * speed * Time.deltaTime;
+                    Wind.GetComponent<wind>().setDirectionDS(Mathf.Sign(transform.localScale.x));
+                    Wind.transform.position = windpPoint.position;
+
                 }
                 else
                 {

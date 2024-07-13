@@ -21,10 +21,13 @@ public class skill : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        hit = true;
-        effect.enabled = false;
+        hit = true;       
+        anim.SetBool("isOnHit",true);
         anim.SetTrigger("explosion");
+        effect.enabled = false;
+
     }
+
 
     public void setDirection(float _direction)
     {
@@ -56,11 +59,12 @@ public class skill : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        OnTriggerEnter2D(effect);
         if (hit) return;
         float skillSpeed = speed * Time.deltaTime * direction;
         transform.Translate(skillSpeed, 0.0f, 0.0f);
         anim.SetTrigger("FireBall");
-        
+       
     }
 
 }
