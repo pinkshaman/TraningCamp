@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 
@@ -17,27 +18,28 @@ public class skill : MonoBehaviour
     private bool hit;
     public float speed = 30.0f;
     float direction;
+    
 
 
-
-    //private void OnTriggerEnter2D(Collider2D collision)
-    //{
-    //    hit = true;
-    //    anim.SetBool("isOnHit", true);
-    //    anim.SetTrigger("onHit");
-    //    effect.enabled = false;
-
-    //}
-    void onHitDefi()
-    {
-        hit = true;
-        if (effect.IsTouchingLayers())
-        {
+    private void OnTriggerEnter2D(Collider2D collider)
+    {        
+        
+            hit = true;
             anim.SetBool("isOnHit", true);
             anim.SetTrigger("onHit");
             effect.enabled = false;
-        }
+        
     }
+    //void onhitdefi()
+    //{
+    //    hit = true;
+    //    if (effect.("Ground"))
+    //    {
+    //        anim.setbool("isonhit", true);
+    //        anim.settrigger("onhit");
+    //        effect.enabled = false;
+    //    }
+    //}
 
 
     public void setDirection(float _direction)
@@ -61,7 +63,7 @@ public class skill : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        effect = GetComponent<CustomCollider2D>();
+        effect = GetComponent<Collider2D>();
         anim = GetComponent<Animator>();
 
 
@@ -76,7 +78,7 @@ public class skill : MonoBehaviour
         transform.Translate(skillSpeed, 0.0f, 0.0f);
         anim.SetTrigger("FireBall");
         //OnTriggerEnter2D(effect);
-        onHitDefi();
+        //onHitDefi();
 
     }
 
