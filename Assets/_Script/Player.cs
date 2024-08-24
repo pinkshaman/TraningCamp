@@ -145,8 +145,6 @@ public class Player : MonoBehaviour
             isCrouching = false;
             anim.SetBool("isCrouch", false);
         }
-
-
     }
     void Attack()
     {
@@ -157,9 +155,10 @@ public class Player : MonoBehaviour
             anim.SetBool("isAttack", true);
 
             skillCooldown = 0;
-
+            
             fireball[findFireball()].transform.position = firePoint.position;
-            fireball[findFireball()].GetComponent<skill>().setDirection(Mathf.Sign(transform.localScale.x));
+            fireball[findFireball()].GetComponent<SkillFireBall>().SetDirection(Mathf.Sign(transform.localScale.x));
+            
         }
         else
         {
@@ -199,7 +198,7 @@ public class Player : MonoBehaviour
     }
 
     // Update is called once per frame
-    private void FixedUpdate()
+    private void Update()
     {
         skillCooldown += Time.deltaTime;
         Restart();

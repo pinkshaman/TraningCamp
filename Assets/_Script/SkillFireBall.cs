@@ -4,45 +4,24 @@ using Unity.VisualScripting;
 using UnityEditor.U2D.Aseprite;
 using UnityEngine;
 
-public class skill : MonoBehaviour
+public class SkillFireBall : MonoBehaviour
 {
-    public string skillName;
-    public string skillDescription;
-    public string skillType;
-    public string skillLevel;
-
     public Collider2D effect;
     public Vector3 skillRange;
-
     private Animator anim;
     private bool hit;
     public float speed = 30.0f;
     float direction;
-    
-
 
     private void OnTriggerEnter2D(Collider2D collider)
-    {        
-        
-            hit = true;
-            anim.SetBool("isOnHit", true);
-            anim.SetTrigger("onHit");
-            effect.enabled = false;
-        
+    {
+        hit = true;
+        anim.SetBool("isOnHit", true);
+        Debug.Log("onHit");
+        anim.SetTrigger("onHit");
+        Destroy(effect);
     }
-    //void onhitdefi()
-    //{
-    //    hit = true;
-    //    if (effect.("Ground"))
-    //    {
-    //        anim.setbool("isonhit", true);
-    //        anim.settrigger("onhit");
-    //        effect.enabled = false;
-    //    }
-    //}
-
-
-    public void setDirection(float _direction)
+    public void SetDirection(float _direction)
     {
         effect.enabled = true;
         direction = _direction;
@@ -65,8 +44,6 @@ public class skill : MonoBehaviour
     {
         effect = GetComponent<Collider2D>();
         anim = GetComponent<Animator>();
-
-
     }
 
     // Update is called once per frame
