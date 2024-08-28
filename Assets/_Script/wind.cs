@@ -8,51 +8,26 @@ using UnityEngine.Scripting.APIUpdating;
 
 public class wind : MonoBehaviour
 {
-    private Animator anim;
-    private float direction;
-    
-
-    public void setDirectionDS(float _direction)
-    {
-        direction = _direction;
-        gameObject.SetActive(true);
-
-
-        float localSccaleX = transform.localScale.x;
-        if (Mathf.Sign(localSccaleX) != _direction)
-            localSccaleX = -localSccaleX;
-        transform.localScale = new Vector3(localSccaleX, transform.localScale.y, transform.localScale.z);
-       
-    }
+    public Animator anim;
+    public Player directionDash;  
     void dasWindEffect()
-    {
-        
-        if (Input.GetButton("Horizontal"))
-        {
-            gameObject.SetActive(true);
-            anim.SetBool("isDashWind",true);
-        }
-        else
-        {
-            anim.SetBool("isDashWind",false);
-            gameObject.SetActive(false);
-        }
+    {      
+        transform.localScale = directionDash.movement;
+        gameObject.SetActive(true);
+        anim.SetBool("isDashWind", true);
     }
-   
+
 
     // Start is called before the first frame update
     void Start()
     {
         anim = GetComponent<Animator>();
-
+        directionDash = FindObjectOfType<Player>();
     }
-
-
-
-    // Update is called once per frame
+   // Update is called once per frame
     void Update()
     {
         dasWindEffect();
-       
+
     }
 }

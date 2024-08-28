@@ -20,8 +20,9 @@ public class Player : MonoBehaviour
     public Collider2D col;
     public Transform firePoint;
     public GameObject PrefabsFireBall;
-    public Transform windpPoint;
-    public GameObject Wind;
+    
+    public GameObject WindPrefabs;
+
     public bool isGrounded = true;
     public bool canMove = true;
     public bool isJumping = false;
@@ -29,23 +30,26 @@ public class Player : MonoBehaviour
     public bool isCrouching = false;
     public bool isMoving = false;
     public bool isDash = false;
+
     public Vector3 movement;
     public float inputX;
-    public float dashDistance = 10.0f;
+    public float dashDistance;
     public float skillCooldown = Mathf.Infinity;
-
+    public float dashSpeed;
+    public float dashDuration ;
     public void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
-            Debug.Log("igrounded = true");
+            anim.SetBool("isGrounded", true);
             isGrounded = true;
+            isJumping = false;
         }
         else
         {
-            Debug.Log("igrounded = false");
             isGrounded = false;
         }
+        Debug.Log($"isGrounded: {isGrounded}");
     }
 
     private void OnTriggerEnter2D(Collider2D collider)
@@ -58,7 +62,7 @@ public class Player : MonoBehaviour
         if (inputX != 0)
         {
             movement = inputX > 0 ? Vector3.right : Vector3.left;
-            rb.transform.localScale = new Vector3(Mathf.Sign(inputX), 1, 0);
+            rb.transform.localScale = new Vector3(Mathf.Sign(inputX), transform.localScale.y, 0);
             isMoving = true;
         }
         else
@@ -74,41 +78,122 @@ public class Player : MonoBehaviour
         Flip();
         if (canMove )
         {
-            rb.transform.position += speed * Time.deltaTime * movement;
-            anim.SetFloat("speed", Mathf.Abs(inputX));
-
+            if (Input.GetKeyDown(KeyCode.N))
+            {
+                canMove = false;
+                StartCoroutine(Dash());
+            }
+                rb.transform.position += speed * Time.deltaTime * movement;
+                anim.SetFloat("speed", Mathf.Abs(inputX));
+            
         }
     }
     public void Jump()
     {
 
-        if (isGrounded == true)
+        if (isGrounded == true && isJumping == false)
         {
             if (Input.GetButton("Jump"))
             {
                 anim.SetTrigger("Jump");
-
+                anim.SetBool("isGrounded", false);
+                isGrounded = false;
                 Vector3 jumpForce = new(0, jumpPower, 0);
                 rb.AddForce(jumpForce, ForceMode2D.Impulse);
                 Debug.Log("Junp");
             }
         }
     }
-    public void Dash()
+
+    public void Cast()
     {
-
-        if (Input.GetKeyDown(KeyCode.N))
+        if (Input.GetKeyDown(KeyCode.G))
         {
-            Flip();
-            //anim.SetBool("isDash", true);
-            Vector3 dashDirection = new(Mathf.Sign(inputX) * dashDistance, 0, 0);
-            Debug.Log("Dashing");
-            anim.SetTrigger("Dash");
-            rb.AddForce(dashDirection, ForceMode2D.Impulse);
-            isDash = true;
-        }
-        
+            anim.SetTrigger("Cast");
+            Debug.Log("Cast");
+            Instantiate(PrefabsFireBall, firePoint);
 
+        }
+    }
+    private void PerformDash()
+    {
+        isDash = true;
+        canMove = false;
+
+        float dashDirection = transform.localScale.x; // Xác định hướng dash theo chiều của nhân vật
+        Vector2 dashForce = new Vector2(dashDirection * dashSpeed, 0); // Tạo lực dash dựa trên hướng
+        rb.velocity = Vector2.zero; // Đặt lại vận tốc để không bị ảnh hưởng bởi các lực khác
+        rb.AddForce(dashForce, ForceMode2D.Impulse); // Áp dụng lực dash với chế độ Impulse
+
+        if (anim != null)
+        {
+            anim.SetTrigger("Dash");
+            anim.SetBool("isDashing", true);
+        }
+
+        if (WindPrefabs != null)
+        {
+            CreateDashEffect();
+        }
+    }
+
+    private void ResetDash()
+    {
+        isDash = false;
+        canMove = true;
+
+        if (anim != null)
+        {
+            anim.SetBool("isDashing", false); // Tắt trạng thái Dash
+            anim.ResetTrigger("Dash"); // Reset trigger để ngăn ngừa Dash liên tục
+        }
+    }
+
+    private void CreateDashEffect()
+    {
+        GameObject effect = Instantiate(WindPrefabs, transform.position, Quaternion.identity);
+        effect.transform.localScale = transform.localScale; // Flip hiệu ứng theo hướng nhân vật
+        effect.transform.position = new Vector3(transform.position.x, transform.position.y - 1f, transform.position.z);
+
+        Animator effectAnimator = effect.GetComponent<Animator>();
+        float animationLength = effectAnimator ? effectAnimator.GetCurrentAnimatorClipInfo(0)[0].clip.length : dashDuration;
+        Destroy(effect, animationLength);
+    }
+
+    private IEnumerator Dash()
+    {
+        {
+            isDash = true;
+            canMove = false;
+            float dashDirection = transform.localScale.x; // Xác định hướng dash theo chiều của nhân vật
+            Vector3 dashForce = new Vector3(dashDirection * dashSpeed, 0,0); // Tạo lực dash dựa trên hướng
+            rb.velocity = Vector3.zero; // Đặt lại vận tốc để không bị ảnh hưởng bởi các lực khác
+            rb.AddForce(dashForce, ForceMode2D.Impulse); // Áp dụng lực dash với chế độ Impulse
+
+            if (anim != null)
+            {
+                anim.SetTrigger("Dash");
+                anim.SetBool("isDash", true);
+            }
+            if (WindPrefabs != null)
+            {
+                GameObject effect = Instantiate(WindPrefabs, transform.position, Quaternion.identity);
+                effect.transform.localScale = transform.localScale; // Flip hiệu ứng theo hướng nhân vật
+                effect.transform.position = new Vector3(transform.position.x, transform.position.y - 1f, transform.position.z);
+
+                // Xóa hiệu ứng sau khi hoạt ảnh kết thúc
+                Animator effectAnimator = effect.GetComponent<Animator>();
+                float animationLength = effectAnimator ? effectAnimator.GetCurrentAnimatorClipInfo(0)[0].clip.length : dashDuration;
+                Destroy(effect, animationLength);
+            }
+
+            yield return new WaitForSeconds(dashDuration); // Chờ thời gian Dash
+
+            isDash = false; // Đặt lại trạng thái Dash
+            canMove = true; // Cho phép di chuyển trở lại
+            anim.SetBool("isDash", false); // Tắt trạng thái Dash
+            anim.ResetTrigger("Dash"); // Reset trigger để ngăn ngừa Dash liên tục
+        }
     }
     public void Crounch()
     {
@@ -183,16 +268,14 @@ public class Player : MonoBehaviour
         skillCooldown += Time.deltaTime;
         Restart();
         if (alive)
-        {
-
-            //cameraFollow();          
+        {           
             Hurt();
             Die();
             Attack();
-            Dash();
             Crounch();
             Jump();
             Move();
+            Cast();
 
         }
     }

@@ -24,7 +24,7 @@ AnimationClip:
       value: {fileID: 21300000, guid: 0869b1e96aac6d34cb086976dc7af826, type: 3}
     - time: 0.36666667
       value: {fileID: 21300000, guid: e29ecfc679eed7f4886ea00aa8f39cb0, type: 3}
-    - time: 0.81666666
+    - time: 0.6666667
       value: {fileID: 21300000, guid: 77f084663dedae54bbc26660c4568bd7, type: 3}
     attribute: m_Sprite
     path: 
@@ -56,7 +56,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.8333333
+    m_StopTime: 0.68333334
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -76,8 +76,8 @@ AnimationClip:
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
   m_Events:
-  - time: 0.33333334
-    functionName: OnTriggerEnter2D
+  - time: 0.6666667
+    functionName: Deactivate
     data: 
     objectReferenceParameter: {fileID: 2067601409970527125, guid: f2111b97c500e7b47ae523eb63538c3e, type: 3}
     floatParameter: 0
