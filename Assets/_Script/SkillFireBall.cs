@@ -3,47 +3,56 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor.U2D.Aseprite;
 using UnityEngine;
+using UnityEngine.Windows;
 
 public class SkillFireBall : MonoBehaviour
 {
     public Player setDirection;
     public Collider2D effect;
-    public Vector3 skillRange;
     private Animator anim;
     private bool hit;
     public float speed = 30.0f;
-    
+    public float timeDestroy = 0.25f;
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
         Debug.Log("onHit");
         hit = true;
-        //anim.SetBool("isOnHit", true);
         effect.enabled = false;
         anim.SetTrigger("onHit");
-        
-    }
+        Destroy(gameObject, timeDestroy);
+        //StartCoroutine(Effect());
 
+    }
+    //public IEnumerator Effect()
+    //{
+    //    OnHit();
+    //    yield return new WaitForSeconds(0.25f);
+    //    Deactivate();
+    //}
+    //public void OnHit()
+    //{
+    //    anim.SetTrigger("onHit");
+    //}
 
     private void Deactivate()
     {
-       Destroy(gameObject);
+        Destroy(gameObject, timeDestroy);
     }
-  
+   
     void Start()
     {
         effect = GetComponent<Collider2D>();
         anim = GetComponent<Animator>();
-        setDirection = FindObjectOfType<Player>();
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (hit) return;
-        skillRange = setDirection.movement;
-        float skillSpeed = speed * Time.deltaTime;
-        transform.Translate(skillSpeed, 0.0f, 0.0f);
+        if (hit) return;      
+        float skillDistance = speed * Time.deltaTime ;
+        transform.Translate(skillDistance, 0.0f, 0.0f);
         anim.SetTrigger("FireBall");
 
     }
